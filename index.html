@@ -1,36 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-ca">
 <head>
-  <meta charset="utf-8">
-  <title>Rock Paper Scissors</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <title>Project 3 – Rock Paper Scissors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5ede2;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      gap: 16px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #6a4c3b;
+    }
+
+    #wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #info {
+      font-size: 14px;
+      background: #fff;
+      border: 1px solid #e3d2bf;
+      padding: 8px 12px;
+      border-radius: 8px;
+      min-width: 260px;
+    }
+
+    #info span.label {
+      font-weight: 600;
+      color: #6a4c3b;
+    }
+
+    #msg {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #6a4c3b;
+    }
+
+    #btnRestart {
+      margin-top: 6px;
+      padding: 4px 10px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid #c78a55;
+      background: #f5ede2;
+      cursor: pointer;
+    }
+
+    #btnRestart:hover {
+      background: #c78a55;
+      color: #f5ede2;
+    }
+
+    canvas {
+      border: 1px solid #d3d3d3;
+      background: #e3d2bf;
+      max-width: 100%;
+    }
+  </style>
 </head>
+
 <body>
-<div id="wrap">
-  <header>
-    <h1>Rock Paper Scissors</h1>
-    <p class="subtitle">little lounge game prototype</p>
-  </header>
+  <h1>Rock Paper Scissors</h1>
 
-  <div class="game-card">
-    <canvas id="game" width="800" height="600"></canvas>
+  <div id="wrapper">
+    <div id="info">
+      <div>
+        <span class="label">Mode:</span> <span id="mode">title</span><br>
+        <span class="label">Opponent:</span> <span id="opp">none</span><br>
+        <span class="label">Result:</span> <span id="result">—</span>
+      </div>
+      <p id="msg">press space to start</p>
+      <button id="btnRestart" type="button">Restart game</button>
+    </div>
+
+    <canvas id="game" width="800" height="600">
+      your browser does not support the HTML5 canvas tag.
+    </canvas>
   </div>
 
-  <div class="hud">
-    <div class="pill">mode: <span id="mode">title</span></div>
-    <div class="pill">opponent: <span id="opp">none</span></div>
-    <div class="pill">result: <span id="result">–</span></div>
-  </div>
-
-  <div class="buttons">
-    <button id="btnRestart" class="danger">restart game</button>
-  </div>
-
-  <p id="msg"></p>
-</div>
-
-<script src="game.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
