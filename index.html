@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Rock Paper Scissors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="wrap">
+  <header>
+    <h1>Rock Paper Scissors</h1>
+    <p class="subtitle">little lounge game prototype</p>
+  </header>
+
+  <div class="game-card">
+    <canvas id="game" width="800" height="600"></canvas>
+  </div>
+
+  <div class="hud">
+    <div class="pill">mode: <span id="mode">title</span></div>
+    <div class="pill">opponent: <span id="opp">none</span></div>
+    <div class="pill">result: <span id="result">–</span></div>
+  </div>
+
+  <div class="buttons">
+    <button id="btnRestart" class="danger">restart game</button>
+  </div>
+
+  <p id="msg"></p>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
