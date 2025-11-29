@@ -6,6 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
+    :root {
+      --cream:  #F5EDE2;
+      --beige:  #E3D2BF;
+      --brown:  #6A4C3B;
+      --caramel:#C78A55;
+      --pink:   #E8B7C2;
+      --grey:   #A5A6AA;
+      --mint:   #C7E0D4;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -13,90 +23,688 @@
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5ede2;
-      color: #333;
+      background: radial-gradient(circle at top, var(--mint) 0, var(--cream) 55%);
+      font: 16px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-      gap: 16px;
+      justify-content: center;
+      padding: 24px 12px;
+      color: var(--brown);
+    }
+
+    #wrap {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    header {
+      margin-bottom: 12px;
     }
 
     h1 {
-      font-size: 28px;
-      color: #6a4c3b;
+      font-size: 24px;
+      letter-spacing: 0.03em;
     }
 
-    #wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-
-    #info {
+    .subtitle {
       font-size: 14px;
-      background: #fff;
-      border: 1px solid #e3d2bf;
-      padding: 8px 12px;
-      border-radius: 8px;
-      min-width: 260px;
+      opacity: 0.8;
     }
 
-    #info span.label {
-      font-weight: 600;
-      color: #6a4c3b;
-    }
-
-    #msg {
-      margin-top: 4px;
-      font-size: 13px;
-      color: #6a4c3b;
-    }
-
-    #btnRestart {
-      margin-top: 6px;
-      padding: 4px 10px;
-      font-size: 13px;
-      border-radius: 999px;
-      border: 1px solid #c78a55;
-      background: #f5ede2;
-      cursor: pointer;
-    }
-
-    #btnRestart:hover {
-      background: #c78a55;
-      color: #f5ede2;
+    .game-card {
+      margin-top: 8px;
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow:
+        0 10px 25px rgba(0,0,0,0.12),
+        0 0 0 1px rgba(0,0,0,0.05);
     }
 
     canvas {
-      border: 1px solid #d3d3d3;
-      background: #e3d2bf;
-      max-width: 100%;
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      background: var(--beige);
+    }
+
+    .hud {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 14px;
+    }
+
+    .pill {
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: var(--mint);
+      color: var(--brown);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    }
+
+    .buttons {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: var(--pink);
+      color: var(--brown);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+      transition:
+        background 0.15s ease,
+        transform 0.12s ease,
+        box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 5px 14px rgba(0,0,0,0.15);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+
+    button.danger {
+      background: #e58c8c;
+      color: #3f1717;
+    }
+
+    button.danger:hover {
+      background: #f09a9a;
+    }
+
+    #msg {
+      margin-top: 8px;
+      font-weight: 500;
+      min-height: 1.2em;
+      font-size: 14px;
+      opacity: 0.9;
     }
   </style>
 </head>
-
 <body>
-  <h1>Rock Paper Scissors</h1>
+  <div id="wrap">
+    <header>
+      <h1>Rock Paper Scissors</h1>
+      <p class="subtitle">little lounge game prototype</p>
+    </header>
 
-  <div id="wrapper">
-    <div id="info">
-      <div>
-        <span class="label">Mode:</span> <span id="mode">title</span><br>
-        <span class="label">Opponent:</span> <span id="opp">none</span><br>
-        <span class="label">Result:</span> <span id="result">—</span>
-      </div>
-      <p id="msg">press space to start</p>
-      <button id="btnRestart" type="button">Restart game</button>
+    <div class="game-card">
+      <canvas id="game" width="800" height="600"></canvas>
     </div>
 
-    <canvas id="game" width="800" height="600">
-      your browser does not support the HTML5 canvas tag.
-    </canvas>
+    <div class="hud">
+      <div class="pill">mode: <span id="mode">title</span></div>
+      <div class="pill">opponent: <span id="opp">none</span></div>
+      <div class="pill">result: <span id="result">—</span></div>
+    </div>
+
+    <div class="buttons">
+      <button id="btnRestart" class="danger">restart game</button>
+    </div>
+
+    <p id="msg"></p>
   </div>
 
-  <script src="game.js"></script>
+  <script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const msgEl = document.getElementById("msg");
+const modeSpan = document.getElementById("mode");
+const oppSpan = document.getElementById("opp");
+const resultSpan = document.getElementById("result");
+const btnRestart = document.getElementById("btnRestart");
+
+// images
+const playerImg = new Image();
+playerImg.src = "Player.png";
+
+const opponentImg = new Image();
+opponentImg.src = "Opponent.png";
+
+let mode = "title";
+
+const player = {
+  x: 380,
+  y: 500,
+  w: 40,
+  h: 60,
+  speed: 4
+};
+
+const keys = {
+  ArrowUp: false,
+  ArrowDown: false,
+  ArrowLeft: false,
+  ArrowRight: false
+};
+
+const mainOpp = {
+  name: "opponent",
+  rect: { x: 380, y: 170, w: 60, h: 80 }
+};
+
+const npcs = [
+  { x: 100, y: 200, w: 50, h: 70, speed: 2, dir: 1 },  // walks left-right
+  { x: 600, y: 250, w: 50, h: 70, speed: 1.5, dir: -1 } // walks right-left
+];
+
+const npcBounds = {
+  xMin: -60,    // can go off-screen left
+  xMax: 860,    // can go off-screen right
+  yMin: 150,
+  yMax: 320
+};
+
+const moves = ["rock", "paper", "scissors"];
+let lastOutcome = null;
+let lastMoves = { player: null, opp: null };
+
+let titleBounce = 0;
+let buttonHover = -1;
+let outcomeAnimProgress = 0;
+
+const battleButtons = [
+  { move: "rock",     x: 0, y: 0, w: 0, h: 0 },
+  { move: "paper",    x: 0, y: 0, w: 0, h: 0 },
+  { move: "scissors", x: 0, y: 0, w: 0, h: 0 }
+];
+
+function setMsg(text) {
+  msgEl.textContent = text;
+}
+
+function setMode(newMode) {
+  mode = newMode;
+  modeSpan.textContent = mode;
+
+  if (mode === "title") {
+    setMsg("press space to start");
+  } else if (mode === "lounge") {
+    setMsg("arrows = move • Enter = challenge");
+  } else if (mode === "battle") {
+    setMsg("R / P / S or click a move");
+  }
+}
+
+function rectsOverlap(a, b) {
+  return (
+    a.x < b.x + b.w &&
+    a.x + a.w > b.x &&
+    a.y < b.y + b.h &&
+    a.y + a.h > b.y
+  );
+}
+
+function tryStartBattle() {
+  if (mode !== "lounge") return;
+
+  const p = { x: player.x, y: player.y, w: player.w, h: player.h };
+
+  if (rectsOverlap(p, mainOpp.rect)) {
+    oppSpan.textContent = mainOpp.name;
+    lastOutcome = null;
+    lastMoves = { player: null, opp: null };
+    resultSpan.textContent = "—";
+    outcomeAnimProgress = 0;
+    setMode("battle");
+    return;
+  }
+
+  setMsg("stand right in front of the opponent to start");
+}
+
+function randomOppMove() {
+  return moves[Math.floor(Math.random() * moves.length)];
+}
+
+function beats(a, b) {
+  return (
+    (a === "rock"     && b === "scissors") ||
+    (a === "paper"    && b === "rock")     ||
+    (a === "scissors" && b === "paper")
+  );
+}
+
+function doRound(playerMove) {
+  if (mode !== "battle") return;
+
+  const oppMove = randomOppMove();
+  let outcome = "tie";
+
+  if (playerMove !== oppMove) {
+    outcome = beats(playerMove, oppMove) ? "win" : "lose";
+  }
+
+  lastOutcome = outcome;
+  lastMoves = { player: playerMove, opp: oppMove };
+  outcomeAnimProgress = 0;
+
+  if (outcome === "win") {
+    setMsg("you won • Enter = back to lounge");
+    resultSpan.textContent = "WIN";
+  } else if (outcome === "lose") {
+    setMsg("you lost • Enter = back to lounge");
+    resultSpan.textContent = "LOSE";
+  } else {
+    setMsg("tie • pick again");
+    resultSpan.textContent = "TIE";
+  }
+}
+
+function resetGame() {
+  lastOutcome = null;
+  lastMoves = { player: null, opp: null };
+  player.x = 380;
+  player.y = 500;
+
+  // reset NPCs
+  npcs[0].x = 100;
+  npcs[0].dir = 1;
+  npcs[1].x = 600;
+  npcs[1].dir = -1;
+
+  oppSpan.textContent = "none";
+  resultSpan.textContent = "—";
+  outcomeAnimProgress = 0;
+  setMode("title");
+}
+
+function drawRoundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+function drawSprite(img, x, y, w, h, fallbackColor) {
+  if (img && img.complete && img.naturalWidth > 0) {
+    ctx.drawImage(img, x, y, w, h);
+  } else {
+    ctx.fillStyle = fallbackColor;
+    ctx.fillRect(x, y, w, h);
+  }
+}
+
+function easeOutBack(x) {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+}
+
+function drawTitle() {
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  grad.addColorStop(0, "#E3D2BF");
+  grad.addColorStop(1, "#F5EDE2");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "rgba(199, 224, 212, 0.3)";
+  ctx.beginPath();
+  ctx.arc(100, 100, 80, 0, Math.PI * 2);
+  ctx.arc(700, 500, 100, 0, Math.PI * 2);
+  ctx.fill();
+
+  titleBounce += 0.05;
+  const bounce = Math.sin(titleBounce) * 8;
+
+  ctx.fillStyle = "#6A4C3B";
+  ctx.font = "bold 52px system-ui";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Rock Paper Scissors", canvas.width / 2, 200 + bounce);
+
+  ctx.font = "22px system-ui";
+  ctx.fillStyle = "#C78A55";
+  ctx.fillText("Challenge the Cat", canvas.width / 2, 250 + bounce);
+
+  const btnY = 340;
+  const btnW = 220;
+  const btnH = 60;
+  const btnX = canvas.width / 2 - btnW / 2;
+
+  ctx.fillStyle = "#C78A55";
+  drawRoundRect(btnX, btnY, btnW, btnH, 12);
+  ctx.fill();
+
+  ctx.strokeStyle = "#6A4C3B";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.fillStyle = "#F5EDE2";
+  ctx.font = "bold 24px system-ui";
+  ctx.fillText("PRESS SPACE", canvas.width / 2, btnY + btnH / 2);
+
+  ctx.fillStyle = "#6A4C3B";
+  ctx.font = "16px system-ui";
+  ctx.fillText("Use arrow keys to move • Enter to challenge", canvas.width / 2, 480);
+
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+}
+
+function drawLounge() {
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  grad.addColorStop(0, "#C7E0D4");
+  grad.addColorStop(0.7, "#E3D2BF");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = "rgba(106, 76, 59, 0.1)";
+  ctx.lineWidth = 2;
+  for (let i = 0; i < canvas.width; i += 80) {
+    for (let j = 300; j < canvas.height; j += 80) {
+      ctx.strokeRect(i, j, 80, 80);
+    }
+  }
+
+  ctx.fillStyle = "#6A4C3B";
+  ctx.font = "bold 28px system-ui";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.fillText("The Lounge", canvas.width / 2, 30);
+
+  drawSprite(
+    opponentImg,
+    mainOpp.rect.x,
+    mainOpp.rect.y,
+    mainOpp.rect.w,
+    mainOpp.rect.h,
+    "#A5A6AA"
+  );
+
+  ctx.fillStyle = "#E8B7C2";
+  npcs.forEach(n => {
+    ctx.fillRect(n.x, n.y, n.w, n.h);
+  });
+
+  drawSprite(
+    playerImg,
+    player.x,
+    player.y,
+    player.w,
+    player.h,
+    "#6A4C3B"
+  );
+
+  ctx.textAlign = "left";
+  ctx.font = "14px system-ui";
+  ctx.fillStyle = "#6A4C3B";
+  ctx.fillText("move with arrows, stand in front of the main cat and press Enter", 140, 560);
+}
+
+function drawBattle() {
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  grad.addColorStop(0, "#F5EDE2");
+  grad.addColorStop(1, "#E3D2BF");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = "rgba(106, 76, 59, 0.15)";
+  ctx.lineWidth = 28;
+  ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
+
+  ctx.fillStyle = "#6A4C3B";
+  ctx.font = "bold 32px system-ui";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  ctx.fillText("BATTLE", canvas.width / 2, 60);
+
+  ctx.font = "24px system-ui";
+  ctx.fillText("vs " + mainOpp.name, canvas.width / 2, 105);
+
+  const portraitSizeW = 160;
+  const portraitSizeH = 160;
+  const portraitX = canvas.width / 2 - portraitSizeW / 2;
+  const portraitY = 140;
+
+  drawSprite(
+    opponentImg,
+    portraitX,
+    portraitY,
+    portraitSizeW,
+    portraitSizeH,
+    "#E8B7C2"
+  );
+
+  // CENTERED buttons
+  const baseY = 400;
+  const boxW = 140;
+  const boxH = 60;
+  const gap = 30;
+  const totalWidth = (boxW * 3) + (gap * 2);
+  const startX = (canvas.width - totalWidth) / 2;
+  const labels = ["Rock (R)", "Paper (P)", "Scissors (S)"];
+
+  ctx.font = "16px system-ui";
+  ctx.textBaseline = "middle";
+
+  for (let i = 0; i < 3; i++) {
+    const x = startX + i * (boxW + gap);
+
+    battleButtons[i].x = x;
+    battleButtons[i].y = baseY;
+    battleButtons[i].w = boxW;
+    battleButtons[i].h = boxH;
+
+    ctx.fillStyle = buttonHover === i ? "#C78A55" : "#E3D2BF";
+    drawRoundRect(x, baseY, boxW, boxH, 10);
+    ctx.fill();
+
+    ctx.strokeStyle = "#6A4C3B";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.fillStyle = "#6A4C3B";
+    ctx.textAlign = "center";
+    ctx.fillText(labels[i], x + boxW / 2, baseY + boxH / 2);
+  }
+
+  ctx.textAlign = "center";
+
+  if (lastMoves.player && lastMoves.opp) {
+    ctx.fillStyle = "#6A4C3B";
+    ctx.font = "18px system-ui";
+    ctx.fillText("You chose: " + lastMoves.player.toUpperCase(), canvas.width / 2, 340);
+    ctx.fillText("Opponent chose: " + lastMoves.opp.toUpperCase(), canvas.width / 2, 365);
+  }
+
+  if (lastOutcome === "win" || lastOutcome === "lose") {
+    if (outcomeAnimProgress < 1) {
+      outcomeAnimProgress += 0.04;
+      if (outcomeAnimProgress > 1) outcomeAnimProgress = 1;
+    }
+
+    const alpha = outcomeAnimProgress * 0.8;
+    ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const scale = easeOutBack(outcomeAnimProgress);
+    const text = lastOutcome === "win" ? "YOU WON!" : "GAME OVER";
+    const color = lastOutcome === "win" ? "#C7E0D4" : "#E8B7C2";
+
+    ctx.save();
+    ctx.translate(canvas.width / 2, 290);
+    ctx.scale(scale, scale);
+
+    const boxW = 500;
+    const boxH = 120;
+    ctx.fillStyle = color;
+    drawRoundRect(-boxW/2, -boxH/2, boxW, boxH, 20);
+    ctx.fill();
+
+    ctx.fillStyle = "#6A4C3B";
+    ctx.font = "bold 48px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, 0, -10);
+
+    ctx.font = "20px system-ui";
+    ctx.fillText("Press Enter to return", 0, 30);
+
+    ctx.restore();
+  }
+  else if (lastOutcome === "tie") {
+    if (outcomeAnimProgress < 1) {
+      outcomeAnimProgress += 0.08;
+      if (outcomeAnimProgress > 1) outcomeAnimProgress = 1;
+    }
+
+    const bannerW = 360;
+    const bannerH = 70;
+    const bannerX = canvas.width / 2 - bannerW / 2;
+
+    const targetY = 270;
+    const startY = -bannerH - 20;
+    const currentY = startY + (targetY - startY) * easeOutBack(outcomeAnimProgress);
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+    drawRoundRect(bannerX, currentY, bannerW, bannerH, 16);
+    ctx.fill();
+
+    ctx.strokeStyle = "#C78A55";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.fillStyle = "#6A4C3B";
+    ctx.font = "bold 28px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("TIE — pick again", canvas.width / 2, currentY + bannerH / 2);
+  }
+
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+}
+
+function update() {
+  if (mode === "lounge") {
+    if (keys.ArrowLeft)  player.x -= player.speed;
+    if (keys.ArrowRight) player.x += player.speed;
+    if (keys.ArrowUp)    player.y -= player.speed;
+    if (keys.ArrowDown)  player.y += player.speed;
+
+    if (player.x < 0) player.x = 0;
+    if (player.x + player.w > canvas.width) player.x = canvas.width - player.w;
+    if (player.y < 0) player.y = 0;
+    if (player.y + player.h > canvas.height) player.y = canvas.height - player.h;
+
+    // NPCs walk horizontally, back and forth
+    npcs.forEach(n => {
+      n.x += n.speed * n.dir;
+
+      // reverse direction at boundaries (with some going off-screen)
+      if (n.x < npcBounds.xMin || n.x > npcBounds.xMax) {
+        n.dir *= -1;
+      }
+    });
+  }
+}
+
+function draw() {
+  if (mode === "title") {
+    drawTitle();
+  } else if (mode === "lounge") {
+    drawLounge();
+  } else if (mode === "battle") {
+    drawBattle();
+  }
+}
+
+function loop() {
+  update();
+  draw();
+}
+
+window.addEventListener("keydown", (e) => {
+  if (e.key in keys) {
+    keys[e.key] = true;
+  }
+
+  if (mode === "title" && e.key === " ") {
+    setMode("lounge");
+  }
+
+  if (mode === "lounge" && e.key === "Enter") {
+    tryStartBattle();
+  }
+
+  if (mode === "battle") {
+    if (e.key === "r" || e.key === "R") {
+      buttonHover = 0;
+      doRound("rock");
+    }
+    if (e.key === "p" || e.key === "P") {
+      buttonHover = 1;
+      doRound("paper");
+    }
+    if (e.key === "s" || e.key === "S") {
+      buttonHover = 2;
+      doRound("scissors");
+    }
+
+    if (e.key === "Enter" && (lastOutcome === "win" || lastOutcome === "lose")) {
+      setMode("lounge");
+      lastOutcome = null;
+      lastMoves = { player: null, opp: null };
+      buttonHover = -1;
+      oppSpan.textContent = "none";
+      resultSpan.textContent = "—";
+      outcomeAnimProgress = 0;
+      setMsg("arrows = move • Enter = challenge");
+    }
+  }
+});
+
+window.addEventListener("keyup", (e) => {
+  if (e.key in keys) {
+    keys[e.key] = false;
+  }
+});
+
+canvas.addEventListener("mousedown", (e) => {
+  if (mode !== "battle") return;
+
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+
+  for (let i = 0; i < battleButtons.length; i++) {
+    const b = battleButtons[i];
+    if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) {
+      buttonHover = i;
+      doRound(b.move);
+      break;
+    }
+  }
+});
+
+btnRestart.addEventListener("click", resetGame);
+
+setMode("title");
+setInterval(loop, 1000 / 30);
+  </script>
 </body>
 </html>
