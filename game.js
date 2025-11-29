@@ -47,6 +47,7 @@ let lastMoves = { player: null, opp: null };
 // animation state
 let titleBounce = 0;
 let buttonHover = -1;
+let outcomeAnimProgress = 0; // 0 to 1 for outcome animations
 
 // rock / paper / scissors button boxes (canvas coords)
 const battleButtons = [
@@ -98,7 +99,8 @@ function tryStartBattle() {
       oppSpan.textContent = opponents[i].name;
       lastOutcome = null;
       lastMoves = { player: null, opp: null };
-      resultSpan.textContent = "–";
+      resultSpan.textContent = "—";
+      outcomeAnimProgress = 0;
       setMode("battle");
       return;
     }
@@ -131,6 +133,7 @@ function doRound(playerMove) {
 
   lastOutcome = outcome;
   lastMoves = { player: playerMove, opp: oppMove };
+  outcomeAnimProgress = 0; // restart animation
 
   if (outcome === "win") {
     setMsg("you won • Enter = back to lounge");
@@ -153,7 +156,8 @@ function resetGame() {
   npc.x = 360;
   npc.dir = 1;
   oppSpan.textContent = "none";
-  resultSpan.textContent = "–";
+  resultSpan.textContent = "—";
+  outcomeAnimProgress = 0;
   setMode("title");
 }
 
@@ -170,6 +174,13 @@ function drawRoundRect(x, y, w, h, r) {
   ctx.lineTo(x, y + r);
   ctx.arcTo(x, y, x + r, y, r);
   ctx.closePath();
+}
+
+// easing function for smooth animations
+function easeOutBack(x) {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
 }
 
 function drawTitle() {
@@ -282,31 +293,32 @@ function drawBattle() {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // inset border so text doesn't overlap
   ctx.strokeStyle = "rgba(106, 76, 59, 0.15)";
-  ctx.lineWidth = 40;
-  ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+  ctx.lineWidth = 28;
+  ctx.strokeRect(40, 40, canvas.width - 80, canvas.height - 80);
 
   ctx.fillStyle = "#6A4C3B";
   ctx.font = "bold 32px system-ui";
   ctx.textAlign = "center";
   ctx.textBaseline = "top";
-  ctx.fillText("BATTLE", canvas.width / 2, 30);
+  ctx.fillText("BATTLE", canvas.width / 2, 60);
 
   const name = currentOpp != null ? opponents[currentOpp].name : "opponent";
   ctx.font = "24px system-ui";
-  ctx.fillText("vs " + name, canvas.width / 2, 75);
+  ctx.fillText("vs " + name, canvas.width / 2, 105);
 
   // simple rectangle as opponent portrait
   const portraitSizeW = 160;
   const portraitSizeH = 160;
   const portraitX = canvas.width / 2 - portraitSizeW / 2;
-  const portraitY = 120;
+  const portraitY = 140;
 
   ctx.fillStyle = "#E8B7C2";
   ctx.fillRect(portraitX, portraitY, portraitSizeW, portraitSizeH);
 
   // rock / paper / scissors buttons
-  const baseY = 380;
+  const baseY = 400;
   const boxW = 140;
   const boxH = 60;
   const gap = 30;
@@ -347,36 +359,66 @@ function drawBattle() {
     ctx.fillText("Opponent chose: " + lastMoves.opp.toUpperCase(), canvas.width / 2, 365);
   }
 
-  // overlay for win / lose
+  // IMPROVED OUTCOME ANIMATIONS
   if (lastOutcome === "win" || lastOutcome === "lose") {
-    ctx.fillStyle = "rgba(0,0,0,0.75)";
+    // animate progress from 0 to 1
+    if (outcomeAnimProgress < 1) {
+      outcomeAnimProgress += 0.04;
+      if (outcomeAnimProgress > 1) outcomeAnimProgress = 1;
+    }
+
+    // fade in background
+    const alpha = outcomeAnimProgress * 0.8;
+    ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // scale and bounce effect
+    const scale = easeOutBack(outcomeAnimProgress);
+    
     const text = lastOutcome === "win" ? "YOU WON!" : "GAME OVER";
     const color = lastOutcome === "win" ? "#C7E0D4" : "#E8B7C2";
 
+    ctx.save();
+    ctx.translate(canvas.width / 2, 290);
+    ctx.scale(scale, scale);
+
+    // background box
+    const boxW = 500;
+    const boxH = 120;
     ctx.fillStyle = color;
-    drawRoundRect(150, 230, 500, 120, 20);
+    drawRoundRect(-boxW/2, -boxH/2, boxW, boxH, 20);
     ctx.fill();
 
+    // text
     ctx.fillStyle = "#6A4C3B";
     ctx.font = "bold 48px system-ui";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(text, canvas.width / 2, 270);
+    ctx.fillText(text, 0, -10);
 
     ctx.font = "20px system-ui";
-    ctx.fillText("Press Enter to return to the lounge", canvas.width / 2, 320);
+    ctx.fillText("Press Enter to return", 0, 30);
+
+    ctx.restore();
   }
-  // banner for tie (so something actually happens)
+  // TIE - slide in from top
   else if (lastOutcome === "tie") {
+    if (outcomeAnimProgress < 1) {
+      outcomeAnimProgress += 0.08;
+      if (outcomeAnimProgress > 1) outcomeAnimProgress = 1;
+    }
+
     const bannerW = 360;
     const bannerH = 70;
     const bannerX = canvas.width / 2 - bannerW / 2;
-    const bannerY = 260;
+    
+    // slide from above
+    const targetY = 270;
+    const startY = -bannerH - 20;
+    const currentY = startY + (targetY - startY) * easeOutBack(outcomeAnimProgress);
 
-    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-    drawRoundRect(bannerX, bannerY, bannerW, bannerH, 16);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+    drawRoundRect(bannerX, currentY, bannerW, bannerH, 16);
     ctx.fill();
 
     ctx.strokeStyle = "#C78A55";
@@ -387,7 +429,7 @@ function drawBattle() {
     ctx.font = "bold 28px system-ui";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("TIE – pick again", canvas.width / 2, bannerY + bannerH / 2);
+    ctx.fillText("TIE — pick again", canvas.width / 2, currentY + bannerH / 2);
   }
 
   ctx.textAlign = "left";
@@ -462,7 +504,8 @@ window.addEventListener("keydown", (e) => {
       buttonHover = -1;
       currentOpp = null;
       oppSpan.textContent = "none";
-      resultSpan.textContent = "–";
+      resultSpan.textContent = "—";
+      outcomeAnimProgress = 0;
       setMsg("arrows = move • Enter = challenge");
     }
   }
